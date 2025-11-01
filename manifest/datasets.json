@@ -1,0 +1,53 @@
+[
+  {
+    "id": "crop_district",
+    "title": "District-wise, season-wise crop production statistics",
+    "url": "https://data.gov.in/catalog/district-wise-season-wise-crop-production-statistics",
+    "download_date": "2025-10-31",
+    "catalog_url": "https://data.gov.in/catalog/district-wise-season-wise-crop-production-statistics",
+    "resource_url": "",
+    "resource_id": "",
+    "license": "",
+    "attribution": "",
+    "notes": "",
+    "file_name": "crop_district_raw.csv",
+    "format": "CSV",
+    "filesize_bytes": 585921,
+    "md5": "cb8251875c04c1ac05cbc5b72ec405dc",
+    "columns": [
+      "state_name",
+      "district_name",
+      "crop_year",
+      "season",
+      "crop",
+      "area_",
+      "production_"
+    ],
+    "downloaded_at_ist": "2025-10-31T10:59:12 IST"
+  },
+  {
+    "id": "imd_rainfall",
+    "title": "Area-weighted monthly/seasonal/annual rainfall (IMD)",
+    "url": "https://data.gov.in/catalog/area-weighted-monthly-seasonal-and-annual-rainfall-36-meteorological-subdivisions",
+    "download_date": "2025-10-31",
+    "catalog_url": "https://data.gov.in/catalog/area-weighted-monthly-seasonal-and-annual-rainfall-36-meteorological-subdivisions",
+    "resource_url": "",
+    "resource_id": "",
+    "license": "",
+    "attribution": "",
+    "notes": "",
+    "file_name": "imd_rainfall_raw.csv",
+    "format": "CSV",
+    "filesize_bytes": 4254,
+    "md5": "c4357fe4310d1e2f27f678fe8b1ed2c4",
+    "columns": [
+      "year",
+      "_annual",
+      "_jan_feb",
+      "_mar_may",
+      "_jun_sep",
+      "_oct_dec"
+    ],
+    "downloaded_at_ist": "2025-10-31T10:59:12 IST"
+  }
+]

@@ -1,0 +1,13 @@
+# API & server
+fastapi
+uvicorn[standard]
+
+# Data & analytics
+duckdb
+pandas
+numpy
+pyarrow
+
+# Utils 
+requests
+python-multipart

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Samarth Q&A</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    :root {
+      --br: 14px;
+      --accent: hsl(195, 90%, 52%);
+      --accent2: #222c5a;
+      --bg1: #0f0c29;
+      --bg2: #302b63;
+      --bg3: #24243e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(60deg, #1a0033, #3c096c, #800080, #e07bb0);
+
+      color: #ffffff;
+    }
+
+    .container {
+      text-align: center;
+      width: 90%;
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 80px 60px;
+      border-radius: var(--br);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input[type=text] {
+      flex: 1;
+      min-width: 60%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: var(--br);
+      font-size: 1rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: background 0.2s;
+    }
+
+    input[type=text]:focus {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    button {
+      padding: 16px 24px;
+      border: none;
+      border-radius: var(--br);
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .answer {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: var(--br);
+      background: rgba(240, 234, 234, 0.1);
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0;
+      font-size: 0.95rem;
+      color: #eaeaea;
+    }
+
+    th, td {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      padding: 5px 10px;
+      border-radius: 999px;
+      margin-right: 6px;
+      text-decoration: none;
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .pill:hover {
+      background: var(--accent);
+      color: #111;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: #ddd;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Samarth Q&A</h1>
+    <div class="row">
+      <input id="q" type="text" placeholder="Ask a question... e.g. Compare rainfall trends in two states"/>
+      <button id="ask">Ask</button>
+    </div>
+    <div id="out"></div>
+  </div>
+
+  <script>
+  const askBtn = document.getElementById('ask');
+  const qEl = document.getElementById('q');
+  const out = document.getElementById('out');
+
+  function render(json){
+    out.innerHTML = '';
+    const box = document.createElement('div');
+    box.className = 'answer';
+    box.innerHTML = `<div><strong>Answer:</strong> ${json.answer_text||''}</div>`;
+
+    (json.tables||[]).forEach(t=>{
+      const h = document.createElement('h3'); h.textContent = t.title||'';
+      box.appendChild(h);
+      const rows = t.rows||[];
+      if(!rows.length){ const p = document.createElement('p'); p.textContent='(no rows)'; box.appendChild(p); return; }
+      const cols = Object.keys(rows[0]);
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      thead.innerHTML = '<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      rows.forEach(r=>{
+        tbody.innerHTML += '<tr>'+cols.map(c=>`<td>${r[c]}</td>`).join('')+'</tr>';
+      });
+      table.appendChild(tbody);
+      box.appendChild(table);
+    });
+
+    const cites = document.createElement('div');
+    cites.className = 'cites';
+    cites.innerHTML = 'Sources: ' + (json.citations||[]).map(c=>{
+      const title = c.title || c.dataset_id;
+      const url = c.catalog_url || '#';
+      return `<a class="pill" href="${url}" target="_blank" rel="noopener">${title}</a>`;
+    }).join(' ');
+    box.appendChild(cites);
+    out.appendChild(box);
+  }
+
+  async function ask(){
+    const q = qEl.value.trim();
+    if(!q) return;
+    askBtn.disabled = true; askBtn.textContent='Asking…';
+    out.textContent = '';
+    try{
+      const res = await fetch('/ask', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({q})
+      });
+      const raw = await res.text();
+      try {
+        const json = JSON.parse(raw);
+        render(json);
+      } catch(parseErr) {
+        out.innerHTML = `<div class="answer"><strong>Error:</strong> Expected JSON but got:<pre class="small">${raw.slice(0,1000)}</pre></div>`;
+      }
+    }catch(e){
+      out.innerHTML = `<div class="answer"><strong>Error:</strong> ${e}</div>`;
+    }finally{
+      askBtn.disabled=false; askBtn.textContent='Ask';
+    }
+  }
+
+  askBtn.onclick = ask;
+  qEl.addEventListener('keydown', e=>{ if(e.key==='Enter') ask(); });
+  </script>
+</body>
+</html>

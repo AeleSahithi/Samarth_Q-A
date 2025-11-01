@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+venv/
+env/
+.myenv/
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Cache and build
+*.egg-info/
+build/
+dist/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Data files (optional)
+*.parquet
+*.csv
+*.xlsx
