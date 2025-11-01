@@ -11,3 +11,4 @@ pyarrow
 # Utils 
 requests
 python-multipart
+pydantic
